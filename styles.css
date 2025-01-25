@@ -6,7 +6,7 @@ body {
 
 
 
-#setupDiv, #gameDiv {
+#setupDiv, #gameDiv, #resultDiv {
     margin: 20px auto;
     max-width: 600px;
     padding: 20px;

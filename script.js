@@ -60,11 +60,9 @@ function startGame() {
 
     const numQuestions = parseInt(document.getElementById('numQuestions').value);
 
-    // Filter groups to include only selected ones
-    const filteredGroups = groups.filter(group => selectedGroupIds.includes(group.id));
-
-    // Filter quizData to include only songs from selected groups
-    const filteredQuizData = allSongs.filter(song => 
+    // Filter groups and songs
+    window.filteredGroups = groups.filter(group => selectedGroupIds.includes(group.id));
+    const filteredQuizData = allSongs.filter(song =>
         selectedGroupIds.includes(song.groupId)
     );
 
@@ -73,33 +71,53 @@ function startGame() {
         return;
     }
 
-    // Shuffle and slice the quiz data
-    const shuffledData = filteredQuizData.sort(() => Math.random() - 0.5);
-    quizData = shuffledData.slice(0, numQuestions);
+    // Shuffle and slice quiz data
+    quizData = filteredQuizData.sort(() => Math.random() - 0.5).slice(0, numQuestions);
 
-    // Store filtered groups globally for the dropdown
-    window.filteredGroups = filteredGroups;
+    console.log('New game started with quizData:', quizData);
 
-    // Hide setup and show the game
+    // Hide setup screen and show game screen
     document.getElementById('setupDiv').style.display = 'none';
     document.getElementById('gameDiv').style.display = 'block';
+
     loadQuestion();
 }
 
 
-
 function restartGame() {
+    console.log('Restarting the game...');
+
     // Reset game state
     score = 0;
     currentQuestionIndex = 0;
+    quizData = []; // Clear old questions
+    window.filteredGroups = []; // Reset filtered groups
 
-    // Show the setup page and hide the game page
+    // Reset dropdown menus
+    const groupDropdown = document.getElementById('groupDropdown');
+    const songDropdown = document.getElementById('songDropdown');
+    if (groupDropdown) groupDropdown.innerHTML = '<option value="">Select a group</option>';
+    if (songDropdown) songDropdown.innerHTML = '<option value="">Select a song</option>';
+
+    // Reset result text
+    const resultText = document.getElementById('result');
+    if (resultText) resultText.textContent = '';
+
+    // Reset audio player
+    const audioPlayer = document.getElementById('audioPlayer');
+    if (audioPlayer) audioPlayer.src = '';
+
+    // Reload group options
+    const groupOptions = document.getElementById('groupOptions');
+    if (groupOptions) groupOptions.innerHTML = '';
+    loadGameData();
+
+    // Show setup screen and hide game and result screens
     document.getElementById('setupDiv').style.display = 'block';
     document.getElementById('gameDiv').style.display = 'none';
+    document.getElementById('resultDiv').style.display = 'none';
 
-    // Reset any dynamic content
-    document.getElementById('groupOptions').innerHTML = '';
-    loadGameData(); // Reload groups and songs
+    console.log('Game restarted. Ready for a new game.');
 }
 
 
@@ -188,16 +206,20 @@ function submitAnswer() {
 
 // End the game
 function endGame() {
-    const gameDiv = document.getElementById('gameDiv');
-    gameDiv.innerHTML = `
-        <h2>Game Over</h2>
-        <p>Your score: ${score}/${quizData.length}</p>
-        <button id="restartButton" class="bg-green-500 text-white px-4 py-2 rounded-md mt-4 hover:bg-green-600 transition">Restart Game</button>
-    `;
+    // Hide the game screen
+    document.getElementById('gameDiv').style.display = 'none';
 
-    // Add an event listener to the Restart button
+    // Update result content
+    document.getElementById('resultScore').textContent = `Your score: ${score}/${quizData.length}`;
+
+    // Show the result screen
+    const resultDiv = document.getElementById('resultDiv');
+    resultDiv.style.display = 'block';
+
+    // Attach the restart button event listener
     document.getElementById('restartButton').addEventListener('click', restartGame);
 }
+
 
 
 // Event listeners
