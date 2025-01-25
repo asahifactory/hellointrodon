@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Intro Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <header class="bg-green-500 text-white text-center py-6 shadow-md">
+        <h1 class="text-4xl font-bold">ハロプロイントロドン！</h1>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+        <!-- Setup Section -->
+        <section id="setupDiv" class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-4 text-green-500">グループを選んでください（複数可）</h2>
+            <div id="groupOptions" class="grid grid-cols-2 gap-4"></div>
+            <label for="numQuestions" class="block text-lg font-medium mt-6">Number of Questions:</label>
+            <input type="number" id="numQuestions" class="border border-gray-300 rounded-md p-2 mt-2 w-full" value="10">
+            <button id="startButton" class="bg-green-500 text-white px-4 py-2 rounded-md mt-4 hover:bg-green-600 transition">Start Game</button>
+        </section>
+        <!-- Game Section -->
+        <section id="gameDiv" class="hidden bg-white rounded-lg shadow-md p-6">
+            <audio id="audioPlayer" class="w-full mb-4" controls></audio>
+            <div id="question" class="text-lg font-medium text-gray-700 mb-4"></div>
+            <label for="groupDropdown" class="block text-lg font-medium">Choose Group:</label>
+            <select id="groupDropdown" class="border border-gray-300 rounded-md p-2 mb-4 w-full">
+                <option value="">Select a group</option>
+            </select>
+            <label for="songDropdown" class="block text-lg font-medium">Choose Song:</label>
+            <select id="songDropdown" class="border border-gray-300 rounded-md p-2 mb-4 w-full">
+                <option value="">Select a song</option>
+            </select>
+            <button id="submitAnswer" class="bg-green-500 text-white px-4 py-2 rounded-md mt-4 hover:bg-green-600 transition">Submit Answer</button>
+            <div id="result" class="mt-4 text-lg font-semibold text-center"></div>
+        </section>
+    </main>
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
