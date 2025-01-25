@@ -14,6 +14,14 @@ body {
     border-radius: 8px;
 }
 
+#songInfo {
+    margin: 20px auto;
+    max-width: 600px;
+    padding: 20px;
+    border: 2px solid #f08300;
+    border-radius: 8px;
+}
+
 button {
     padding: 10px 20px;
     margin: 10px;

@@ -39,6 +39,7 @@ function loadGameData() {
             groupOptions.appendChild(wrapper);
         });
         console.log('Groups and songs loaded:', { groups, allSongs });
+        displaySongInfo();
     } catch (error) {
         console.error('Failed to load game data:', error);
     }
@@ -76,10 +77,7 @@ function startGame() {
 
     console.log('New game started with quizData:', quizData);
 
-    // Hide setup screen and show game screen
-    document.getElementById('setupDiv').style.display = 'none';
-    document.getElementById('gameDiv').style.display = 'block';
-
+    showGameScreen(); // Switch to game screen
     loadQuestion();
 }
 
@@ -112,10 +110,7 @@ function restartGame() {
     if (groupOptions) groupOptions.innerHTML = '';
     loadGameData();
 
-    // Show setup screen and hide game and result screens
-    document.getElementById('setupDiv').style.display = 'block';
-    document.getElementById('gameDiv').style.display = 'none';
-    document.getElementById('resultDiv').style.display = 'none';
+    showSetupScreen();
 
     console.log('Game restarted. Ready for a new game.');
 }
@@ -137,8 +132,28 @@ function loadQuestion() {
         return;
     }
 
-    const audioPlayer = document.getElementById('audioPlayer');
-    audioPlayer.src = `songs/${question.file_path}`;
+    // const audioPlayer = document.getElementById('audioPlayer');
+    // audioPlayer.src = `songs/${question.file_path}`;
+
+    // Update the play button behavior
+    const playButton = document.getElementById('playButton');
+    playButton.style.pointerEvents = 'auto'; // Ensure it's clickable initially
+
+    playButton.onclick = () => {
+        const audio = new Audio(`songs/${question.file_path}`);
+
+        // Disable the play button while audio is playing
+        playButton.style.pointerEvents = 'none';
+        playButton.style.opacity = '0.5'; // Optional: visually indicate it's disabled
+
+        audio.play();
+
+        // Re-enable the play button when the audio ends
+        audio.addEventListener('ended', () => {
+            playButton.style.pointerEvents = 'auto';
+            playButton.style.opacity = '1'; // Reset opacity
+        });
+    };
 
     const groupDropdown = document.getElementById('groupDropdown');
     const songDropdown = document.getElementById('songDropdown');
@@ -214,11 +229,69 @@ function endGame() {
 
     // Show the result screen
     const resultDiv = document.getElementById('resultDiv');
-    resultDiv.style.display = 'block';
+    showResultScreen();
 
     // Attach the restart button event listener
     document.getElementById('restartButton').addEventListener('click', restartGame);
 }
+
+function displaySongInfo() {
+    const songInfoDiv = document.getElementById('songInfo');
+
+    // Calculate total number of songs
+    const totalSongs = allSongs.length;
+
+    // Calculate the number of songs for each group
+    const groupSongCounts = groups.map(group => {
+        const groupSongs = allSongs.filter(song => song.groupId === group.id);
+        return {
+            groupName: group.name,
+            songCount: groupSongs.length
+        };
+    });
+
+    // Build the HTML content
+    let infoHtml = `<p>Total Songs: <strong>${totalSongs}</strong></p>`;
+    infoHtml += `<ul>`;
+    groupSongCounts.forEach(group => {
+        infoHtml += `<li>${group.groupName}: ${group.songCount} song(s)</li>`;
+    });
+    infoHtml += `</ul>`;
+
+    // Update the songInfoDiv with the generated content
+    songInfoDiv.innerHTML = infoHtml;
+}
+
+function showSetupScreen() {
+    // Show the setup screen
+    document.getElementById('setupDiv').style.display = 'block';
+    document.getElementById('songInfo').style.display = 'block'; // Show song info
+
+    // Hide other screens
+    document.getElementById('gameDiv').style.display = 'none';
+    document.getElementById('resultDiv').style.display = 'none';
+}
+
+function showGameScreen() {
+    // Show the game screen
+    document.getElementById('gameDiv').style.display = 'block';
+
+    // Hide other screens
+    document.getElementById('setupDiv').style.display = 'none';
+    document.getElementById('songInfo').style.display = 'none'; // Hide song info
+    document.getElementById('resultDiv').style.display = 'none';
+}
+
+function showResultScreen() {
+    // Show the result screen
+    document.getElementById('resultDiv').style.display = 'block';
+
+    // Hide other screens
+    document.getElementById('setupDiv').style.display = 'none';
+    document.getElementById('songInfo').style.display = 'none'; // Hide song info
+    document.getElementById('gameDiv').style.display = 'none';
+}
+
 
 
 
