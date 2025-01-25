@@ -38,7 +38,6 @@ function loadGameData() {
 
             groupOptions.appendChild(wrapper);
         });
-        console.log(groups[0].id)
         console.log('Groups and songs loaded:', { groups, allSongs });
     } catch (error) {
         console.error('Failed to load game data:', error);
@@ -53,7 +52,6 @@ function startGame() {
     const selectedGroupIds = Array.from(
         document.querySelectorAll('#groupOptions input:checked')
     ).map(input => parseInt(input.value));
-    console.log('Selected Group IDs:', selectedGroupIds);
 
     if (selectedGroupIds.length === 0) {
         alert('Please select at least one group to start the game!');
@@ -64,17 +62,11 @@ function startGame() {
 
     // Filter groups to include only selected ones
     const filteredGroups = groups.filter(group => selectedGroupIds.includes(group.id));
-    console.log(groups)    
-
-    console.log('Filtered Groups:', filteredGroups);
-
-    console.log('Filtered Groups:', window.filteredGroups);
 
     // Filter quizData to include only songs from selected groups
     const filteredQuizData = allSongs.filter(song => 
         selectedGroupIds.includes(song.groupId)
     );
-    console.log('Filtered Quiz Data:', filteredQuizData);
 
     if (filteredQuizData.length === 0) {
         alert('No songs available for the selected groups!');
@@ -120,7 +112,6 @@ function loadQuestion() {
     }
 
     const question = quizData[currentQuestionIndex];
-    console.log('Current Question:', question);
 
     // Check if question data is valid
     if (!question || !question.file_path) {
@@ -161,7 +152,6 @@ function loadQuestion() {
     });
 
     document.getElementById('question').textContent = `Question ${currentQuestionIndex + 1}`;
-    console.log('Filtered Groups:', window.filteredGroups);
 }
 
 
@@ -188,7 +178,7 @@ function submitAnswer() {
         document.getElementById('result').textContent = 'Correct!';
     } else {
         const correctGroupName = groups.find(group => group.id === currentQuestion.groupId)?.name;
-        document.getElementById('result').textContent = `Wrong! Correct answer: ${currentQuestion.title} from group ${correctGroupName}`;
+        document.getElementById('result').textContent = `Wrong!`;
     }
 
     currentQuestionIndex++;
