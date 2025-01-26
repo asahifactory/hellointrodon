@@ -317,10 +317,10 @@ function displaySongInfo() {
     });
 
     // Build the HTML content
-    let infoHtml = `<p>Total Songs: <strong>${totalSongs}</strong></p>`;
+    let infoHtml = `<p>現在曲数：<strong>${totalSongs}</strong></p>`;
     infoHtml += `<ul>`;
     groupSongCounts.forEach(group => {
-        infoHtml += `<li>${group.groupName}: ${group.songCount} song(s)</li>`;
+        infoHtml += `<li>${group.groupName}：${group.songCount}</li>`;
     });
     infoHtml += `</ul>`;
 
