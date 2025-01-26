@@ -1,3 +1,8 @@
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded');
+    console.log('Group Label:', document.getElementById('groupLabel'));
+});
+
 let quizData = []; // Holds the questions
 let allSongs = []; // Holds all songs for the dropdowns
 let currentQuestionIndex = 0; // Tracks the current question
@@ -96,20 +101,19 @@ function restartGame() {
     quizData = []; // Clear old questions
     window.filteredGroups = []; // Reset filtered groups
 
-    // // Reset dropdown menus
-    // const groupDropdown = document.getElementById('groupDropdown');
-    // const songDropdown = document.getElementById('songDropdown');
-    // if (groupDropdown) groupDropdown.innerHTML = '<option value="">Select a group</option>';
-    // if (songDropdown) songDropdown.innerHTML = '<option value="">Select a song</option>';
-
+    // Reset dropdowns
     const groupDropdown = document.getElementById('groupDropdown');
     const songDropdown = document.getElementById('songDropdown');
-    if (groupDropdown) {groupDropdown.innerHTML = '<option value="">Select a group</option>';}
-    if (songDropdown) {songDropdown.innerHTML = '<option value="">Select a song</option>';}
+    if (groupDropdown) {
+        groupDropdown.style.display = 'block'; // Ensure it's visible
+        groupDropdown.innerHTML = '<option value="">Select a group</option>';
+    }
+    if (songDropdown) {
+        songDropdown.innerHTML = '<option value="">Select a song</option>';
+    }
 
     // Reset result text
-    const resultText = document.getElementById('result');
-    if (resultText) resultText.textContent = '';
+    document.getElementById('result').innerHTML = '';
 
     // Reset the Submit Answer button
     const submitAnswerButton = document.getElementById('submitAnswer');
@@ -135,10 +139,6 @@ function restartGame() {
 
 // Load a question
 function loadQuestion() {
-    // if (currentQuestionIndex >= quizData.length) {
-    //     endGame();
-    //     return;
-    // }
 
     const submitAnswerButton = document.getElementById('submitAnswer');
     if (currentQuestionIndex >= quizData.length) {
@@ -167,7 +167,8 @@ function loadQuestion() {
 
     playButton.onclick = () => {
         const audio = new Audio(`songs/${question.file_path}`);
-
+        document.getElementById('result').innerHTML = ""
+        
         // Disable the play button while audio is playing
         playButton.style.pointerEvents = 'none';
         playButton.style.opacity = '0.5'; // Optional: visually indicate it's disabled
@@ -181,68 +182,59 @@ function loadQuestion() {
         });
     };
 
-    // const groupDropdown = document.getElementById('groupDropdown');
-    // const songDropdown = document.getElementById('songDropdown');
-
-    // // Populate the group dropdown with filtered groups
-    // groupDropdown.innerHTML = '<option value="">Select a group</option>';
-    // window.filteredGroups.forEach(group => {
-    //     const option = document.createElement('option');
-    //     option.value = group.id;
-    //     option.textContent = group.name;
-    //     groupDropdown.appendChild(option);
-    // });
-
-    // // Listen for group selection to populate the song dropdown
-    // groupDropdown.addEventListener('change', () => {
-    //     const selectedGroupId = parseInt(groupDropdown.value);
-
-    //     // Filter allSongs to include only songs from the selected group
-    //     const filteredSongs = allSongs.filter(song => song.groupId === selectedGroupId);
-
-    //     // Populate the song dropdown
-    //     songDropdown.innerHTML = '<option value="">Select a song</option>';
-    //     filteredSongs.forEach(song => {
-    //         const option = document.createElement('option');
-    //         option.value = song.title;
-    //         option.textContent = song.title;
-    //         songDropdown.appendChild(option);
-    //     });
-    // });
-
-    // document.getElementById('question').textContent = `Question ${currentQuestionIndex + 1}`;
-
     const groupDropdown = document.getElementById('groupDropdown');
     const songDropdown = document.getElementById('songDropdown');
+    const groupLabel = document.getElementById('groupLabel');
 
     // Reset dropdowns
     groupDropdown.innerHTML = '<option value="">Select a group</option>';
     songDropdown.innerHTML = '<option value="">Select a song</option>';
 
     // Populate group dropdown
-    window.filteredGroups.forEach(group => {
-        const option = document.createElement('option');
-        option.value = group.id;
-        option.textContent = group.name;
-        groupDropdown.appendChild(option);
-    });
+    if (window.filteredGroups.length === 1) {
+        // If only one group is selected
+        const selectedGroup = window.filteredGroups[0];
 
-    // Add event listener for group selection
-    groupDropdown.addEventListener('change', () => {
-        const selectedGroupId = parseInt(groupDropdown.value);
+        // Hide the group dropdown and auto-select the group
+        groupDropdown.style.display = 'none';
+        groupLabel.textContent = selectedGroup.name;
 
-        // Filter songs based on the selected group
-        const filteredSongs = allSongs.filter(song => song.groupId === selectedGroupId);
-
-        // Populate the song dropdown
-        songDropdown.innerHTML = '<option value="">Select a song</option>';
-        filteredSongs.forEach(song => {
+        // Populate the song dropdown with all songs from the selected group
+        selectedGroup.songs.forEach(song => {
             const option = document.createElement('option');
             option.value = song.title;
             option.textContent = song.title;
             songDropdown.appendChild(option);
         });
-    });
+
+        console.log(`Only one group selected: ${selectedGroup.name}`);
+    } else {
+        // If multiple groups are selected, show both dropdowns
+        groupDropdown.style.display = 'block';
+        groupLabel.textContent = 'Choose a Group';
+
+        // Populate group dropdown
+        window.filteredGroups.forEach(group => {
+            const option = document.createElement('option');
+            option.value = group.id;
+            option.textContent = group.name;
+            groupDropdown.appendChild(option);
+        });
+
+        // Populate songs dynamically based on group selection
+        groupDropdown.addEventListener('change', () => {
+            const selectedGroupId = parseInt(groupDropdown.value);
+            const filteredSongs = allSongs.filter(song => song.groupId === selectedGroupId);
+
+            songDropdown.innerHTML = '<option value="">Select a song</option>';
+            filteredSongs.forEach(song => {
+                const option = document.createElement('option');
+                option.value = song.title;
+                option.textContent = song.title;
+                songDropdown.appendChild(option);
+            });
+        });
+    }
 
     // Reset button to its default behavior
     submitAnswerButton.textContent = "Submit Answer";
@@ -253,14 +245,17 @@ function loadQuestion() {
 }
 
 
-
-
 // Submit an answer
 function submitAnswer() {
     const groupDropdown = document.getElementById('groupDropdown');
     const songDropdown = document.getElementById('songDropdown');
-    const selectedGroupId = parseInt(groupDropdown.value);
+    let selectedGroupId = parseInt(groupDropdown.value);
     const selectedSong = songDropdown.value;
+
+    // Automatically set group ID if only one group is selected
+    if (window.filteredGroups.length === 1) {
+        selectedGroupId = window.filteredGroups[0].id; // Auto-select the group
+    }
 
     const currentQuestion = quizData[currentQuestionIndex];
 
@@ -277,7 +272,7 @@ function submitAnswer() {
         document.getElementById('result').textContent = '正解！すごい！';
     } else {
         const correctGroupName = groups.find(group => group.id === currentQuestion.groupId)?.name;
-        document.getElementById('result').innerHTML = `残念！<br>正解は：「<strong>${currentQuestion.title}</strong>」でした。`;
+        document.getElementById('result').innerHTML = `残念！<br>正解は：<br>${correctGroupName}の<br>「<strong>${currentQuestion.title}</strong>」<br>でした`;
 
     }
 
