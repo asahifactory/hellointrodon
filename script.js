@@ -66,6 +66,11 @@ function startGame() {
 
     const numQuestions = parseInt(document.getElementById('numQuestions').value);
 
+    if (isNaN(numQuestions) || numQuestions <= 0) {
+        alert("Please enter a positive number for the number of questions.");
+        return;
+    }
+
     // Filter groups and songs
     window.filteredGroups = groups.filter(group => selectedGroupIds.includes(group.id));
     const filteredQuizData = allSongs.filter(song =>
@@ -211,7 +216,7 @@ function loadQuestion() {
             songDropdown.appendChild(option);
         });
 
-        console.log(`Only one group selected: ${selectedGroup.name}`);
+        // console.log(`Only one group selected: ${selectedGroup.name}`);
     } else {
         // If multiple groups are selected, show both dropdowns
         groupDropdown.style.display = 'block';
