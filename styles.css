@@ -18,7 +18,7 @@ body {
     margin: 20px auto;
     max-width: 600px;
     padding: 20px;
-    border: 2px solid #f08300;
+    border: 2px solid #ec6800;
     border-radius: 8px;
 }
 
@@ -60,4 +60,9 @@ button:active {
 
 #groupOptions input[type="checkbox"] {
     vertical-align: middle;
+}
+
+.container {
+    max-width: 600px; /* Match the width of your other sections */
+    margin: 0 auto; /* Center the content */
 }

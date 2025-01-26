@@ -4,6 +4,11 @@ let currentQuestionIndex = 0; // Tracks the current question
 let groups = []; // Holds the groups fetched from the API
 let score = 0; // Player's score
 
+document.getElementById('startButton').addEventListener('click', startGame);
+
+// Set default behavior for submitAnswer
+document.getElementById('submitAnswer').onclick = submitAnswer;
+
 // Load groups and songs from the API
 function loadGameData() {
     try {
@@ -91,15 +96,25 @@ function restartGame() {
     quizData = []; // Clear old questions
     window.filteredGroups = []; // Reset filtered groups
 
-    // Reset dropdown menus
+    // // Reset dropdown menus
+    // const groupDropdown = document.getElementById('groupDropdown');
+    // const songDropdown = document.getElementById('songDropdown');
+    // if (groupDropdown) groupDropdown.innerHTML = '<option value="">Select a group</option>';
+    // if (songDropdown) songDropdown.innerHTML = '<option value="">Select a song</option>';
+
     const groupDropdown = document.getElementById('groupDropdown');
     const songDropdown = document.getElementById('songDropdown');
-    if (groupDropdown) groupDropdown.innerHTML = '<option value="">Select a group</option>';
-    if (songDropdown) songDropdown.innerHTML = '<option value="">Select a song</option>';
+    if (groupDropdown) {groupDropdown.innerHTML = '<option value="">Select a group</option>';}
+    if (songDropdown) {songDropdown.innerHTML = '<option value="">Select a song</option>';}
 
     // Reset result text
     const resultText = document.getElementById('result');
     if (resultText) resultText.textContent = '';
+
+    // Reset the Submit Answer button
+    const submitAnswerButton = document.getElementById('submitAnswer');
+    submitAnswerButton.textContent = "Submit Answer"; // Reset button text
+    submitAnswerButton.onclick = submitAnswer; // Reset button behavior
 
     // Reset audio player
     const audioPlayer = document.getElementById('audioPlayer');
@@ -108,8 +123,9 @@ function restartGame() {
     // Reload group options
     const groupOptions = document.getElementById('groupOptions');
     if (groupOptions) groupOptions.innerHTML = '';
-    loadGameData();
+    
 
+    loadGameData();
     showSetupScreen();
 
     console.log('Game restarted. Ready for a new game.');
@@ -119,8 +135,21 @@ function restartGame() {
 
 // Load a question
 function loadQuestion() {
+    // if (currentQuestionIndex >= quizData.length) {
+    //     endGame();
+    //     return;
+    // }
+
+    const submitAnswerButton = document.getElementById('submitAnswer');
     if (currentQuestionIndex >= quizData.length) {
-        endGame();
+        // Update the button to say "See Your Score"
+        submitAnswerButton.textContent = "See Your Score";
+
+        // Change the button's functionality to transition to the result screen
+        submitAnswerButton.onclick = () => {
+            endGame();
+        };
+
         return;
     }
 
@@ -131,9 +160,6 @@ function loadQuestion() {
         console.error('Invalid question data:', question);
         return;
     }
-
-    // const audioPlayer = document.getElementById('audioPlayer');
-    // audioPlayer.src = `songs/${question.file_path}`;
 
     // Update the play button behavior
     const playButton = document.getElementById('playButton');
@@ -155,11 +181,45 @@ function loadQuestion() {
         });
     };
 
+    // const groupDropdown = document.getElementById('groupDropdown');
+    // const songDropdown = document.getElementById('songDropdown');
+
+    // // Populate the group dropdown with filtered groups
+    // groupDropdown.innerHTML = '<option value="">Select a group</option>';
+    // window.filteredGroups.forEach(group => {
+    //     const option = document.createElement('option');
+    //     option.value = group.id;
+    //     option.textContent = group.name;
+    //     groupDropdown.appendChild(option);
+    // });
+
+    // // Listen for group selection to populate the song dropdown
+    // groupDropdown.addEventListener('change', () => {
+    //     const selectedGroupId = parseInt(groupDropdown.value);
+
+    //     // Filter allSongs to include only songs from the selected group
+    //     const filteredSongs = allSongs.filter(song => song.groupId === selectedGroupId);
+
+    //     // Populate the song dropdown
+    //     songDropdown.innerHTML = '<option value="">Select a song</option>';
+    //     filteredSongs.forEach(song => {
+    //         const option = document.createElement('option');
+    //         option.value = song.title;
+    //         option.textContent = song.title;
+    //         songDropdown.appendChild(option);
+    //     });
+    // });
+
+    // document.getElementById('question').textContent = `Question ${currentQuestionIndex + 1}`;
+
     const groupDropdown = document.getElementById('groupDropdown');
     const songDropdown = document.getElementById('songDropdown');
 
-    // Populate the group dropdown with filtered groups
+    // Reset dropdowns
     groupDropdown.innerHTML = '<option value="">Select a group</option>';
+    songDropdown.innerHTML = '<option value="">Select a song</option>';
+
+    // Populate group dropdown
     window.filteredGroups.forEach(group => {
         const option = document.createElement('option');
         option.value = group.id;
@@ -167,11 +227,11 @@ function loadQuestion() {
         groupDropdown.appendChild(option);
     });
 
-    // Listen for group selection to populate the song dropdown
+    // Add event listener for group selection
     groupDropdown.addEventListener('change', () => {
         const selectedGroupId = parseInt(groupDropdown.value);
 
-        // Filter allSongs to include only songs from the selected group
+        // Filter songs based on the selected group
         const filteredSongs = allSongs.filter(song => song.groupId === selectedGroupId);
 
         // Populate the song dropdown
@@ -184,8 +244,14 @@ function loadQuestion() {
         });
     });
 
+    // Reset button to its default behavior
+    submitAnswerButton.textContent = "Submit Answer";
+    submitAnswerButton.onclick = submitAnswer;
+
+    // Update the question text
     document.getElementById('question').textContent = `Question ${currentQuestionIndex + 1}`;
 }
+
 
 
 
@@ -208,10 +274,11 @@ function submitAnswer() {
         selectedSong === currentQuestion.title
     ) {
         score++;
-        document.getElementById('result').textContent = 'Correct!';
+        document.getElementById('result').textContent = '正解！すごい！';
     } else {
         const correctGroupName = groups.find(group => group.id === currentQuestion.groupId)?.name;
-        document.getElementById('result').textContent = `Wrong!`;
+        document.getElementById('result').innerHTML = `残念！<br>正解は：「<strong>${currentQuestion.title}</strong>」でした。`;
+
     }
 
     currentQuestionIndex++;
@@ -297,7 +364,7 @@ function showResultScreen() {
 
 // Event listeners
 document.getElementById('startButton').addEventListener('click', startGame);
-document.getElementById('submitAnswer').addEventListener('click', submitAnswer);
+// document.getElementById('submitAnswer').addEventListener('click', submitAnswer);
 
 // Load game data on page load
 document.addEventListener('DOMContentLoaded', loadGameData);
