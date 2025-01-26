@@ -118,6 +118,11 @@ function restartGame() {
     // Reset the Submit Answer button
     const submitAnswerButton = document.getElementById('submitAnswer');
     submitAnswerButton.textContent = "Submit Answer"; // Reset button text
+
+    // Reset to the original Tailwind classes
+    submitAnswerButton.classList.remove("bg-red-500", "hover:bg-red-600", "text-white"); // Remove red styles
+    submitAnswerButton.classList.add("bg-green-500", "hover:bg-green-600"); // Add green styles
+
     submitAnswerButton.onclick = submitAnswer; // Reset button behavior
 
     // Reset audio player
@@ -143,7 +148,11 @@ function loadQuestion() {
     const submitAnswerButton = document.getElementById('submitAnswer');
     if (currentQuestionIndex >= quizData.length) {
         // Update the button to say "See Your Score"
-        submitAnswerButton.textContent = "See Your Score";
+        submitAnswerButton.textContent = "結果発表";
+
+        // Add Tailwind classes for the red style
+        submitAnswerButton.classList.remove("bg-green-500", "hover:bg-green-600"); // Remove existing green styles
+        submitAnswerButton.classList.add("bg-red-500", "hover:bg-red-600", "text-white"); // Add red styles
 
         // Change the button's functionality to transition to the result screen
         submitAnswerButton.onclick = () => {
@@ -168,7 +177,7 @@ function loadQuestion() {
     playButton.onclick = () => {
         const audio = new Audio(`songs/${question.file_path}`);
         document.getElementById('result').innerHTML = ""
-        
+
         // Disable the play button while audio is playing
         playButton.style.pointerEvents = 'none';
         playButton.style.opacity = '0.5'; // Optional: visually indicate it's disabled
@@ -241,7 +250,7 @@ function loadQuestion() {
     submitAnswerButton.onclick = submitAnswer;
 
     // Update the question text
-    document.getElementById('question').textContent = `Question ${currentQuestionIndex + 1}`;
+    document.getElementById('question').textContent = `第${currentQuestionIndex + 1}問`;
 }
 
 
@@ -287,7 +296,7 @@ function endGame() {
     document.getElementById('gameDiv').style.display = 'none';
 
     // Update result content
-    document.getElementById('resultScore').textContent = `Your score: ${score}/${quizData.length}`;
+    document.getElementById('resultScore').textContent = `${quizData.length}問中${score}正解`;
 
     // Show the result screen
     const resultDiv = document.getElementById('resultDiv');
