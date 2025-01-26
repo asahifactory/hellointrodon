@@ -1,8 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded');
-    console.log('Group Label:', document.getElementById('groupLabel'));
-});
-
 let quizData = []; // Holds the questions
 let allSongs = []; // Holds all songs for the dropdowns
 let currentQuestionIndex = 0; // Tracks the current question
@@ -48,7 +43,7 @@ function loadGameData() {
 
             groupOptions.appendChild(wrapper);
         });
-        console.log('Groups and songs loaded:', { groups, allSongs });
+        // console.log('Groups and songs loaded:', { groups, allSongs });
         displaySongInfo();
     } catch (error) {
         console.error('Failed to load game data:', error);
